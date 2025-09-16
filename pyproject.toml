@@ -1,0 +1,29 @@
+[project]
+name = "low_trust_photo_backup"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Joe Unwin", email = "joeunwin55@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+low_trust_photo_backup = "low_trust_photo_backup:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[dependency-groups]
+def = [
+    "pytest>=8.4.1",
+    "ruff>=0.12.3"
+]
+dev = [
+    "pytest>=8.4.2",
+]
