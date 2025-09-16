@@ -9,7 +9,7 @@ def test_update_directory_catalog():
     db = SQLiteDB(db_path)
 
     files_stmt = """
-        hash TEXT PRIMARY KEY,
+        hash TEXT NOT NULL,
         machine_name TEXT NOT NULL,
         filepath TEXT NOT NULL,
         updated_date TEXT 

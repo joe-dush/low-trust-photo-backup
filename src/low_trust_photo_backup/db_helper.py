@@ -142,7 +142,19 @@ class SQLiteDB:
         """Fetch all rows."""
         result = self.execute(query, params)
         return result.rows
-    
+
+    def fetch_list_str(self, query: str, params: Union[Dict, Tuple, List] = None) -> List[str]:
+        """Fetch all rows."""
+        result = self.execute(query, params)
+        str_list = []
+        for row in result.rows:
+            if len(row.values()) > 1:
+                raise ValueError("Cannot fetch a list of strings, the query returns more than one column")
+            if isinstance(list(row.values())[0], str):
+                raise TypeError("Cannot fetch a list of strings, the column is not TEXT")
+            str_list.append(list(row.values())[0])
+        return str_list
+
     def insert(self, table: str, data: Dict[str, Any]) -> int:
         """
         Insert a single row into a table.
