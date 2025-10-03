@@ -47,7 +47,10 @@ def _scan_directory(directory: Path, snapshot_filename: str = '.file_snapshot.js
     
     for file_path in directory.rglob('*'):
         if file_path.is_file() and file_path.name != snapshot_filename:
-            relative_path = str(file_path.relative_to(directory))
+            # make sure paths are converted to unix style. This makes the comparison easier
+            # as paths are converted like this when writing the snapshot file too
+            # convert them to Path objects when reading to make it platform agnostic
+            relative_path = str(file_path.relative_to(directory).as_posix())
             files_info[relative_path] = _get_file_info(file_path)
     
     return files_info
@@ -66,6 +69,7 @@ def _save_snapshot(snapshot_file: Path, snapshot: Dict) -> None:
     """Save current snapshot to file."""
     snapshot_data = {
         'timestamp': datetime.now().isoformat(),
+        'base_path': str(snapshot_file.parent.as_posix()),
         'files': snapshot
     }
     
