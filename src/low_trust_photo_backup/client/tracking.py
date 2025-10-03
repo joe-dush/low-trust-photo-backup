@@ -151,7 +151,7 @@ def _display_changes(created: Set, modified: Set, deleted: Set,
 def detect_created_and_modified_files(directory: Path) -> set:
     """Track changes in the directory."""
     # check the dir exists
-    if not os.path.exists(directory):
+    if not os.path.exists(directory.as_posix()):
         raise NotADirectoryError(f"'{directory.absolute()}' does not exist")
 
     snapshot_file = Path(os.path.join(str(directory), '.file_snapshot.json'))
