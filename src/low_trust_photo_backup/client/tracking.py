@@ -13,7 +13,6 @@ If no directory is specified, it uses the current directory.
 
 import os
 import json
-import argparse
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Set, Tuple, Optional
@@ -73,15 +72,16 @@ def _save_snapshot(snapshot_file: Path, snapshot: Dict) -> None:
     try:
         with open(snapshot_file, 'w') as f:
             json.dump(snapshot_data, f, indent=2)
-    except IOError as e:
-        print(f"Warning: Could not save snapshot: {e}")
+    except (IOError, TypeError, ValueError) as e:
+        print(f"Error: Could not save snapshot: {e}")
+        raise  # Re-raise the exception
 
 
-def _compare_snapshots(old_snapshot: Dict, new_snapshot: Dict) -> Tuple[Set, Set, Set]:
+def _compare_snapshots(old_snapshot: Dict, new_snapshot: Dict) -> Tuple[Dict, Dict, Dict]:
     """Compare two snapshots and return created, modified, and deleted files."""
     new_files = set(new_snapshot.keys())
     if not old_snapshot:
-        return new_files, set(), set() 
+        return new_snapshot, dict(), dict()
     old_files = set(old_snapshot.keys())
     
     created = new_files - old_files
@@ -104,7 +104,10 @@ def _compare_snapshots(old_snapshot: Dict, new_snapshot: Dict) -> Tuple[Set, Set
         if size_changed or mtime_changed or inode_changed:
             modified.add(file_path)
     
-    return created, modified, deleted
+    created_dict = {k: new_snapshot[k] for k in created}
+    modified_dict = {k: new_snapshot[k] for k in modified}
+    deleted_dict = {k: old_snapshot[k] for k in deleted}
+    return created_dict, modified_dict, deleted_dict
 
 
 def _display_changes(created: Set, modified: Set, deleted: Set, 
@@ -146,6 +149,7 @@ def detect_created_and_modified_files(directory: Path) -> set:
     # check the dir exists
     if not os.path.exists(directory):
         raise NotADirectoryError(f"'{directory.absolute()}' does not exist")
+
     snapshot_file = Path(os.path.join(str(directory), '.file_snapshot.json'))
     
     print(f"Scanning directory: {directory.absolute()}")
@@ -169,7 +173,7 @@ def detect_created_and_modified_files(directory: Path) -> set:
     created, modified, deleted = _compare_snapshots(previous_snapshot, current_snapshot)
     
     # Display results
-    _display_changes(created, modified, deleted, current_snapshot, previous_snapshot)
+    _display_changes(set(created.keys()), set(modified.keys()), set(deleted.keys()), current_snapshot, previous_snapshot)
     
     # Update snapshot
     _save_snapshot(snapshot_file, current_snapshot)
