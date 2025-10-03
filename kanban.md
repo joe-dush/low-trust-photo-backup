@@ -1,4 +1,6 @@
 # Now
+- Snapshot dataclass
+    - to make reading/writing, and passing file info lists around easier
 
 # Next
 - make bytes more readable in printing
