@@ -1,7 +1,10 @@
+from datetime import datetime
 from pathlib import Path
+from typing import Dict, List, Set
+import zipfile
 
 
-def group_files_by_size(data, max_size_gb=2):
+def group_files_by_size(base_path: Path, data: Dict[Path, int], max_size_gb=2):
     """
     Groups file paths into sets where each set's total size is <= max_size_gb.
 
@@ -12,15 +15,14 @@ def group_files_by_size(data, max_size_gb=2):
     Returns:
         List of sets of Path objects, each set totaling <= max_size_gb
     """
+    # TODO error handling for individual files larger than 2Gb
     max_bytes = max_size_gb * 1024 * 1024 * 1024  # Convert GB to bytes
-    base_path = Path(data["base_path"])
 
     groups = []
     current_group = set()
     current_size = 0
 
-    for filename, info in data["files"].items():
-        file_size = info["size"]
+    for filename, file_size in data.items():
         file_path = base_path / filename
 
         # If adding this file exceeds max_size, start a new group

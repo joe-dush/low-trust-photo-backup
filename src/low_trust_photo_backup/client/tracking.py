@@ -11,7 +11,6 @@ Usage:
 If no directory is specified, it uses the current directory.
 """
 
-import os
 import json
 from pathlib import Path
 from datetime import datetime
@@ -83,11 +82,11 @@ def _save_snapshot(snapshot_file: Path, snapshot: Dict) -> None:
 
 def _compare_snapshots(
     old_snapshot: Dict, new_snapshot: Dict
-) -> Tuple[Dict, Dict, Dict]:
+) -> Tuple[Set, Set, Set]:
     """Compare two snapshots and return created, modified, and deleted files."""
     new_files = set(new_snapshot.keys())
     if not old_snapshot:
-        return new_snapshot, dict(), dict()
+        return new_files, set(), set()
     old_files = set(old_snapshot.keys())
 
     created = new_files - old_files
@@ -113,10 +112,7 @@ def _compare_snapshots(
         if size_changed or mtime_changed or inode_changed:
             modified.add(file_path)
 
-    created_dict = {k: new_snapshot[k] for k in created}
-    modified_dict = {k: new_snapshot[k] for k in modified}
-    deleted_dict = {k: old_snapshot[k] for k in deleted}
-    return created_dict, modified_dict, deleted_dict
+    return created, modified, deleted
 
 
 def _display_changes(
@@ -158,15 +154,14 @@ def _display_changes(
         print()
 
 
-def detect_created_and_modified_files(directory: Path) -> set:
+def detect_directory_changes(directory: Path) -> Dict[Path, int]:
     """Track changes in the directory."""
     # check the dir exists
-    if not os.path.exists(directory.as_posix()):
-        raise NotADirectoryError(f"'{directory.absolute()}' does not exist")
+    if not directory.exists():
+        raise NotADirectoryError(f"'{directory}' does not exist")
+    snapshot_file = directory / ".file_snapshot.json" 
 
-    snapshot_file = Path(os.path.join(str(directory), ".file_snapshot.json"))
-
-    print(f"Scanning directory: {directory.absolute()}")
+    print(f"Scanning directory: {directory}")
 
     # Get current state
     current_snapshot = _scan_directory(directory)
@@ -188,9 +183,9 @@ def detect_created_and_modified_files(directory: Path) -> set:
 
     # Display results
     _display_changes(
-        set(created.keys()),
-        set(modified.keys()),
-        set(deleted.keys()),
+        created,
+        modified,
+        deleted,
         current_snapshot,
         previous_snapshot,
     )
@@ -201,4 +196,5 @@ def detect_created_and_modified_files(directory: Path) -> set:
     print("-" * 50)
 
     # return results
-    return created | modified
+    full_set = created | modified
+    return {file: current_snapshot[file]["size"] for file in full_set}
