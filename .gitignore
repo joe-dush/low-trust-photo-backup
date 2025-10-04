@@ -1,5 +1,6 @@
 # test stuff
 tests/test_dir
+tests/zip_staging
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
