@@ -16,6 +16,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Set, Tuple, Optional
 
+from src.low_trust_photo_backup.core.json import read_json_file
+
 
 def _get_file_info(file_path: Path) -> Dict:
     """Get file information: size, mtime, and inode if available."""
@@ -53,15 +55,6 @@ def _scan_directory(
             files_info[relative_path] = _get_file_info(file_path)
 
     return files_info
-
-
-def _load_snapshot(snapshot_file: Path) -> Optional[Dict]:
-    """Load the previous snapshot from file."""
-    if not snapshot_file.exists():
-        return None
-
-    with open(snapshot_file, "r") as f:
-        return json.load(f)
 
 
 def _save_snapshot(snapshot_file: Path, snapshot: Dict) -> None:
@@ -167,7 +160,7 @@ def detect_directory_changes(directory: Path) -> Dict[Path, int]:
     current_snapshot = _scan_directory(directory)
 
     # Load previous snapshot (will return None if first run)
-    previous_data = _load_snapshot(snapshot_file)
+    previous_data = read_json_file(snapshot_file)
     if previous_data:
         previous_snapshot = previous_data.get("files", {})
         last_scan = previous_data.get("timestamp", "unknown")

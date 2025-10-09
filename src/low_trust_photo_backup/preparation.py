@@ -1,7 +1,11 @@
 from datetime import datetime
+import hashlib
+import json
 from pathlib import Path
 from typing import Dict, List, Set
 import zipfile
+
+from low_trust_photo_backup.core.hash import hash
 
 
 def group_files_by_size(base_path: Path, data: Dict[Path, int], max_size_gb=2):
@@ -40,7 +44,7 @@ def group_files_by_size(base_path: Path, data: Dict[Path, int], max_size_gb=2):
 
     return groups
 
-def zip_file_groups(groups: List[Set[Path]], output_dir: Path, base_name: str = "archive"):
+def zip_file_groups(groups: List[Set[Path]], output_dir: Path, base_name: str = "archive") -> List[Path]:
     """
     Creates a zip file for each group of files.
     Args:
@@ -73,3 +77,44 @@ def zip_file_groups(groups: List[Set[Path]], output_dir: Path, base_name: str = 
         print(f"Created: {zip_path}\n")
     
     return created_zips
+
+
+def generate_zip_checksum(zip_path: Path) -> Dict:
+    """
+    Generates a checksum for the zip file.
+    Args:
+        zip_path: Path to the zip file
+    Returns:
+        Dict containing zip checksum and metadata
+    """
+    zip_hash = hash(zip_path)
+
+    # Get file count from zip
+    with zipfile.ZipFile(zip_path, 'r') as zipf:
+        file_count = len(zipf.namelist())
+    
+    checksum_data = {
+        'zip_file': zip_path.name,
+        'zip_hash': zip_hash.hexdigest(),
+        'zip_size_bytes': zip_path.stat().st_size,
+        'file_count': file_count
+    }
+    
+    return checksum_data
+
+def get_checksum_file_name(zip_file_path: Path) -> Path:
+    if not zip_file_path.is_absolute():
+        raise ValueError(f"zip_file_path must be absolute, got: {zip_file_path}")
+    return zip_file_path.parent / f"{zip_file_path.stem}_checksum.json"
+
+def save_checksum_file(checksum_data: Dict, output_path: Path):
+    """
+    Saves checksum data to a JSON file.
+    Args:
+        checksum_data: Dict containing checksum information
+        output_path: Path where checksum file will be saved
+    """
+    with open(output_path, 'w') as f:
+        json.dump(checksum_data, f, indent=2)
+    
+    print(f"Saved checksum file: {output_path}")
