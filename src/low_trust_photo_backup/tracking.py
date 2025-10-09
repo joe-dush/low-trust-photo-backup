@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Set, Tuple, Optional
 
-from src.low_trust_photo_backup.core.json import read_json_file
+from src.low_trust_photo_backup.core.json import read_json_file, write_json_file
 
 
 def _get_file_info(file_path: Path) -> Dict:
@@ -66,8 +66,7 @@ def _save_snapshot(snapshot_file: Path, snapshot: Dict) -> None:
     }
 
     try:
-        with open(snapshot_file, "w") as f:
-            json.dump(snapshot_data, f, indent=2)
+        write_json_file(snapshot_file, snapshot_data)
     except (IOError, TypeError, ValueError) as e:
         print(f"Error: Could not save snapshot: {e}")
         raise  # Re-raise the exception

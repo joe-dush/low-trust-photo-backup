@@ -106,15 +106,3 @@ def get_checksum_file_name(zip_file_path: Path) -> Path:
     if not zip_file_path.is_absolute():
         raise ValueError(f"zip_file_path must be absolute, got: {zip_file_path}")
     return zip_file_path.parent / f"{zip_file_path.stem}_checksum.json"
-
-def save_checksum_file(checksum_data: Dict, output_path: Path):
-    """
-    Saves checksum data to a JSON file.
-    Args:
-        checksum_data: Dict containing checksum information
-        output_path: Path where checksum file will be saved
-    """
-    with open(output_path, 'w') as f:
-        json.dump(checksum_data, f, indent=2)
-    
-    print(f"Saved checksum file: {output_path}")
