@@ -72,9 +72,7 @@ def _save_snapshot(snapshot_file: Path, snapshot: Dict) -> None:
         raise  # Re-raise the exception
 
 
-def _compare_snapshots(
-    old_snapshot: Dict, new_snapshot: Dict
-) -> Tuple[Set, Set, Set]:
+def _compare_snapshots(old_snapshot: Dict, new_snapshot: Dict) -> Tuple[Set, Set, Set]:
     """Compare two snapshots and return created, modified, and deleted files."""
     new_files = set(new_snapshot.keys())
     if not old_snapshot:
@@ -151,7 +149,7 @@ def detect_directory_changes(directory: Path) -> Dict[Path, int]:
     # check the dir exists
     if not directory.exists():
         raise NotADirectoryError(f"'{directory}' does not exist")
-    snapshot_file = directory / ".file_snapshot.json" 
+    snapshot_file = directory / ".file_snapshot.json"
 
     print(f"Scanning directory: {directory}")
 

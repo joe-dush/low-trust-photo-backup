@@ -1,4 +1,5 @@
 """Module dealing with verifying the integrity of zip files"""
+
 import hashlib
 from pathlib import Path
 from typing import Dict
@@ -28,14 +29,14 @@ def generate_zip_checksum(zip_path: Path) -> Checksum:
     zip_hash = hash(zip_path)
 
     # Get file count from zip
-    with zipfile.ZipFile(zip_path, 'r') as zipf:
+    with zipfile.ZipFile(zip_path, "r") as zipf:
         file_count = len(zipf.namelist())
-    
+
     return Checksum(
         zip_file_name=zip_path.name,
         zip_hash=zip_hash.hexdigest(),
         zip_size_bytes=zip_path.stat().st_size,
-        file_count=file_count
+        file_count=file_count,
     )
 
 
@@ -49,29 +50,29 @@ def verify_zip_integrity(zip_path: Path, checksum_file: Path) -> bool:
         True if verification passes, False otherwise
     """
     expected = read_json_file(zip_path)
-    
+
     # Verify zip file checksum
     zip_hash = hash(zip_path)
     actual_zip_hash = zip_hash.hexdigest()
-    
+
     # if actual_zip_hash != expected['zip_sha256']:
     #     print(f"FAILED: Zip file checksum mismatch!")
     #     print(f"  Expected: {expected['zip_sha256']}")
     #     print(f"  Actual:   {actual_zip_hash}")
     #     return False
-    
+
     # print(f"✓ Zip file checksum verified: {zip_path.name}")
-    
+
     # # Verify file count
     # with zipfile.ZipFile(zip_path, 'r') as zipf:
     #     actual_file_count = len(zipf.namelist())
-    
+
     # if actual_file_count != expected['file_count']:
     #     print(f"FAILED: File count mismatch!")
     #     print(f"  Expected: {expected['file_count']} files")
     #     print(f"  Actual:   {actual_file_count} files")
     #     return False
-    
+
     # print(f"✓ File count verified: {actual_file_count} files")
-    
+
     # return True

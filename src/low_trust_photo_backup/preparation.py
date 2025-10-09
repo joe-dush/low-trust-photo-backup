@@ -44,7 +44,10 @@ def group_files_by_size(base_path: Path, data: Dict[Path, int], max_size_gb=2):
 
     return groups
 
-def zip_file_groups(groups: List[Set[Path]], output_dir: Path, base_name: str = "archive") -> List[Path]:
+
+def zip_file_groups(
+    groups: List[Set[Path]], output_dir: Path, base_name: str = "archive"
+) -> List[Path]:
     """
     Creates a zip file for each group of files.
     Args:
@@ -56,26 +59,26 @@ def zip_file_groups(groups: List[Set[Path]], output_dir: Path, base_name: str = 
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     created_zips = []
-    
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    
+
     for i, group in enumerate(groups, 1):
         zip_filename = f"{base_name}_group{i}_{timestamp}.zip"
         zip_path = output_dir / zip_filename
-        
+
         print(f"Creating {zip_filename} with {len(group)} files...")
-        
-        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             for file_path in sorted(group):
                 if file_path.exists():
                     zipf.write(file_path)
                     print(f"  Added: {file_path.name}")
                 else:
                     raise FileNotFoundError()
-        
+
         created_zips.append(zip_path)
         print(f"Created: {zip_path}\n")
-    
+
     return created_zips
 
 
