@@ -79,29 +79,6 @@ def zip_file_groups(groups: List[Set[Path]], output_dir: Path, base_name: str = 
     return created_zips
 
 
-def generate_zip_checksum(zip_path: Path) -> Dict:
-    """
-    Generates a checksum for the zip file.
-    Args:
-        zip_path: Path to the zip file
-    Returns:
-        Dict containing zip checksum and metadata
-    """
-    zip_hash = hash(zip_path)
-
-    # Get file count from zip
-    with zipfile.ZipFile(zip_path, 'r') as zipf:
-        file_count = len(zipf.namelist())
-    
-    checksum_data = {
-        'zip_file': zip_path.name,
-        'zip_hash': zip_hash.hexdigest(),
-        'zip_size_bytes': zip_path.stat().st_size,
-        'file_count': file_count
-    }
-    
-    return checksum_data
-
 def get_checksum_file_name(zip_file_path: Path) -> Path:
     if not zip_file_path.is_absolute():
         raise ValueError(f"zip_file_path must be absolute, got: {zip_file_path}")

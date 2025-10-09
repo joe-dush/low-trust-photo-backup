@@ -7,7 +7,9 @@ authors = [
     { name = "Joe Unwin", email = "joeunwin55@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.12.0",
+]
 
 [project.scripts]
 low_trust_photo_backup = "low_trust_photo_backup:main"
