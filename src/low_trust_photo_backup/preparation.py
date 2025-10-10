@@ -5,8 +5,6 @@ from pathlib import Path
 from typing import Dict, List, Set
 import zipfile
 
-from low_trust_photo_backup.core.hash import hash
-
 
 def group_files_by_size(base_path: Path, data: Dict[Path, int], max_size_gb=2):
     """

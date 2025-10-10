@@ -7,8 +7,8 @@ from dataclasses import dataclass
 import zipfile
 from pydantic import BaseModel, Field, field_validator
 
-from src.low_trust_photo_backup.core.hash import hash
-from src.low_trust_photo_backup.core.json import read_json_file
+from low_trust_photo_backup.common.hashing import hash_file
+from low_trust_photo_backup.common.json import read_json_file
 
 
 class Checksum(BaseModel):
@@ -26,7 +26,7 @@ def generate_zip_checksum(zip_path: Path) -> Checksum:
     Returns:
         Dict containing zip checksum and metadata
     """
-    zip_hash = hash(zip_path)
+    zip_hash = hash_file(zip_path)
 
     # Get file count from zip
     with zipfile.ZipFile(zip_path, "r") as zipf:
@@ -52,7 +52,7 @@ def verify_zip_integrity(zip_path: Path, checksum_file: Path) -> bool:
     expected = read_json_file(zip_path)
 
     # Verify zip file checksum
-    zip_hash = hash(zip_path)
+    zip_hash = hash_file(zip_path)
     actual_zip_hash = zip_hash.hexdigest()
 
     # if actual_zip_hash != expected['zip_sha256']:

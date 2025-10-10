@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Set, Tuple, Optional
 
-from src.low_trust_photo_backup.core.json import read_json_file, write_json_file
+from low_trust_photo_backup.common.json import read_json_file, write_json_file
 
 
 def _get_file_info(file_path: Path) -> Dict:

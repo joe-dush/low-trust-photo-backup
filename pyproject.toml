@@ -13,6 +13,7 @@ dependencies = [
 
 [project.scripts]
 low_trust_photo_backup = "low_trust_photo_backup:main"
+duplicate_manager = "low_trust_photo_backup.duplicate_manager.cli:main"
 
 [build-system]
 requires = ["hatchling"]
