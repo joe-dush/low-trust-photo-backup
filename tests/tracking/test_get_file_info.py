@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock
 from pathlib import Path
 import tempfile
-from low_trust_photo_backup.client.tracking import _get_file_info
+from low_trust_photo_backup.tracking import _get_file_info
 
 
 @pytest.fixture
